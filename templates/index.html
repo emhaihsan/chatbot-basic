@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Chatbot with PDF Interaction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function startChat() {
+            const message = document.getElementById('message').value;
+            $.ajax({
+                type: 'POST',
+                url: '/chat',
+                data: { message: message },
+                success: function(response) {
+                    $('#chat-box').append('<div class="my-2"><strong>You:</strong> ' + message + '</div>');
+                    $('#chat-box').append('<div class="my-2"><strong>Chatbot:</strong> ' + response + '</div>');
+                    document.getElementById('message').value = '';
+                    $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                }
+            });
+            return false;
+        }
+    </script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-2xl font-bold mb-4">Chatbot</h1>
+        <div id="chat-box" class="border border-gray-300 p-4 rounded-lg h-64 overflow-y-scroll bg-gray-50"></div>
+        <form onsubmit="return startChat();" class="mt-4">
+            <label for="message" class="block text-gray-700">Your Message:</label>
+            <input type="text" id="message" name="message" class="w-full p-2 border border-gray-300 rounded mt-2">
+            <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Send</button>
+        </form>
+        <div class="mt-4">
+            <a href="/upload" class="text-blue-500">Upload PDF</a>
+        </div>
+    </div>
+</body>
+</html>
