@@ -8,10 +8,11 @@
     <script>
         function startChat() {
             const message = document.getElementById('message').value;
+            const historyName = document.getElementById('history_name').value;
             $.ajax({
                 type: 'POST',
                 url: '/chat',
-                data: { message: message },
+                data: { message: message, history_name: historyName },
                 success: function(response) {
                     $('#chat-box').append('<div class="my-2"><strong>You:</strong> ' + message + '</div>');
                     $('#chat-box').append('<div class="my-2"><strong>Chatbot:</strong> ' + response + '</div>');
@@ -23,13 +24,29 @@
         }
     </script>
 </head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+<body class="bg-gray-100 h-screen flex">
+    <div class="bg-white p-4 w-64 border-r border-gray-300">
+        <h2 class="text-lg font-bold mb-4">History</h2>
+        <ul>
+            {% for history in histories %}
+            <li><a href="/history/{{ history }}" class="text-blue-500">{{ history }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="flex-1 p-8">
         <h1 class="text-2xl font-bold mb-4">Chatbot</h1>
-        <div id="chat-box" class="border border-gray-300 p-4 rounded-lg h-64 overflow-y-scroll bg-gray-50"></div>
+        <div id="chat-box" class="border border-gray-300 p-4 rounded-lg h-64 overflow-y-scroll bg-gray-50">
+            {% if history %}
+            {% for chat in history %}
+            <div class="my-2"><strong>You:</strong> {{ chat.user }}</div>
+            <div class="my-2"><strong>Chatbot:</strong> {{ chat.bot }}</div>
+            {% endfor %}
+            {% endif %}
+        </div>
         <form onsubmit="return startChat();" class="mt-4">
             <label for="message" class="block text-gray-700">Your Message:</label>
             <input type="text" id="message" name="message" class="w-full p-2 border border-gray-300 rounded mt-2">
+            <input type="hidden" id="history_name" name="history_name" value="{{ history_name }}">
             <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Send</button>
         </form>
         <div class="mt-4">
